@@ -8,6 +8,7 @@ const typeDefs = require('./graphql/typeDefs.js')
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    context: ({req}) => ({req}),
 })
 
 mongoose.connect(MONGODB, {useNewUrlParser: true})
