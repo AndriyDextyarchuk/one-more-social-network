@@ -1,4 +1,4 @@
-const {AuthenticationError} = require('apollo-server')
+const {UserInputError, AuthenticationError} = require('apollo-server')
 
 const Post = require('../../models/Post.js')
 const checkAuth = require('../../utils/check-auth.js')
@@ -30,7 +30,6 @@ module.exports = {
     Mutation: {
         async createPost(_, {body}, context){
             const user = checkAuth(context)
-            console.log(user)
 
             const newPost = new Post({
                 body,
@@ -41,9 +40,10 @@ module.exports = {
 
             const post = await newPost.save()
 
+            context.pubSub.publish('NEW_POST', {newPost: post})
+
             return post
         },
-
         async deletePost(_, {postID}, context){
             const user = checkAuth(context)
 
@@ -58,6 +58,29 @@ module.exports = {
             }catch (e){
                 throw new Error(e)
             }
+        },
+        async likePost(_, {postID}, context){
+            const {userName} = checkAuth(context)
+
+            const post = await Post.findById(postID)
+
+            if (post) {
+                if(post.likes.find(like => like.userName === userName)){
+                    post.like = post.likes.filter( like => like.userName !== userName)
+                } else {
+                    post.likes.push({
+                        userName,
+                        createdAt: new Date().toISOString()
+                    })
+                }
+                await post.save()
+                return post
+            } else throw new UserInputError('Post not found')
         }
+    },
+    Subscription: {
+        newPost: {
+            subscribe: (_, __, {pubSub}) => pubSub.asyncIterator('NEW_POST')
+        } 
     }
 }
