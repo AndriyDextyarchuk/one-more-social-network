@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link } from 'react-router-dom'
 
 export function PostCard(props){
-    const {post: {body, createdAt, id, userName, likeCount, commentCount, likes}} = props
+    const {post: {body, createdAt, id, userName, likeCount, commentCount}} = props
 
     function likePost(){
         console.log('like post')
