@@ -5,12 +5,12 @@ const resolvers = require('./graphql/resolvers')
 const {MONGODB} = require('./config.js')
 const typeDefs = require('./graphql/typeDefs.js')
 
-// const pubSub = new PubSub()
+const pubSub = new PubSub()
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({req}) => ({req, /*pubSub*/}),
+    context: ({req}) => ({req, pubSub}),
 })
 
 mongoose.connect(MONGODB, {useNewUrlParser: true})
