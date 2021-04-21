@@ -22,7 +22,7 @@ export function SinglePost(props) {
     }
 
     console.log(data)
-    let postMarkup
+    let postMarkup;
     if(!data.getPost){
         postMarkup = <p>Loading post...</p>
     } else {
